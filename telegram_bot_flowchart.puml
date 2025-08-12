@@ -1,0 +1,103 @@
+@startuml
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontSize 12
+
+title Telegram Bot Process Flow - CuddleCare
+
+start
+
+:User sends message to @CuddleCare_app1_bot;
+note right: Commands: /start, /link, /mybookings, /mypets, /unlink
+
+:Telegram sends webhook to Firebase Function;
+note right: POST to telegramWebhookSimple
+
+:Parse incoming message;
+
+if (Valid webhook request?) then (yes)
+  :Extract chat ID, user info, and message text;
+
+  switch (Command type?)
+  case (/start)
+    :Send welcome message with instructions;
+    :Show available commands;
+    stop
+
+  case (/link)
+    :Extract email from command;
+    if (Valid email format?) then (yes)
+      :Search for user in Firestore by email;
+      if (User found?) then (yes)
+        :Update user record with Telegram chat ID;
+        :Send "Account linked successfully" message;
+      else (no)
+        :Send "Account not found" error message;
+      endif
+    else (no)
+      :Send "Invalid email format" error message;
+    endif
+    stop
+
+  case (/mybookings)
+    :Get user by Telegram chat ID;
+    if (User linked?) then (yes)
+      :Query bookings collection for user;
+      :Filter for future bookings only;
+      if (Bookings found?) then (yes)
+        :Format booking details;
+        :Send bookings list to user;
+      else (no)
+        :Send "No upcoming bookings" message;
+      endif
+    else (no)
+      :Send "Account not linked" error message;
+    endif
+    stop
+
+  case (/mypets)
+    :Get user by Telegram chat ID;
+    if (User linked?) then (yes)
+      :Query pets collection for user;
+      if (Pets found?) then (yes)
+        :Format pet details;
+        :Send pets list to user;
+      else (no)
+        :Send "No pets found" message;
+      endif
+    else (no)
+      :Send "Account not linked" error message;
+    endif
+    stop
+
+  case (/unlink)
+    :Get user by Telegram chat ID;
+    if (User linked?) then (yes)
+      :Remove Telegram chat ID from user record;
+      :Send "Account unlinked successfully" message;
+    else (no)
+      :Send "No account linked" error message;
+    endif
+    stop
+
+  case (unknown command)
+    :Send "Unknown command" message;
+    :Show available commands;
+    stop
+  endswitch
+
+else (no)
+  :Log invalid request;
+  :Return error response;
+  stop
+endif
+
+note bottom
+Key Components:
+- Firebase Function: telegramWebhookSimple
+- Firestore Collections: users, bookings, pets
+- Bot Token: 7583657491:AAGfNFb60aDPkquorxgZ4Lg8t5uN1-JGSDo
+- Webhook URL: https://us-central1-cuddlecare2-dd913.cloudfunctions.net/telegramWebhookSimple
+end note
+
+@enduml

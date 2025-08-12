@@ -1,0 +1,140 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.email == 'admin@cuddlecare.com');
+    }
+
+    function isPetSitter() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'provider' ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Pet Sitter' ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Provider' ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isPetSitter == true);
+    }
+
+    function isUser() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'user' ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'User');
+    }
+
+    // TEMPORARY: Allow console access for testing
+    // Remove this in production
+    match /{document=**} {
+      allow read: if true;
+      allow write: if true; // TEMPORARY - Remove in production
+    }
+
+    // Events and carpools (unchanged)
+    match /events/{eventId} {
+      allow read: if true;
+      allow create, update, delete: if isAuthenticated();
+
+      match /carpools/{carpoolId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() && 
+          request.resource.data.driverEmail == request.auth.token.email;
+        allow update: if isAuthenticated();
+        allow delete: if isAuthenticated() &&
+          resource.data.driverEmail == request.auth.token.email;
+      }
+    }
+
+    // Users - Updated with admin access and bot support
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+        (userId == request.auth.uid || isAdmin()); // Users can create their own profile, admins can create any
+      allow update: if isAuthenticated() &&
+        (userId == request.auth.uid || isAdmin()) ||
+        // Allow bot to update telegramChatId and telegramLinkedAt fields
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['telegramChatId', 'telegramLinkedAt']));
+      allow delete: if isAdmin(); // Only admins can delete users
+
+      // User's pets
+      match /pets/{petId} {
+        allow read, write: if request.auth != null && userId == request.auth.uid;
+        // Allow bot to read pets for telegram integration
+        allow read: if true; // Temporarily allow public read for bot functionality
+      }
+    }
+
+    // Bookings
+    match /bookings/{bookingId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && 
+        (resource.data.userId == request.auth.uid || 
+         resource.data.providerId == request.auth.uid);
+    }
+
+    // Availability
+    match /availability/{availabilityId} {
+      allow read: if true;
+      allow create, update, delete: if isPetSitter() && 
+        request.resource.data.petSitterId == request.auth.uid;
+    }
+
+    // Pet sitter services
+    match /pet_sitter_services/{serviceId} {
+      allow read: if true;
+      allow create, update, delete: if isPetSitter() && 
+        request.resource.data.petSitterId == request.auth.uid;
+    }
+
+    // Reviews
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isUser();
+      allow update, delete: if isUser() && 
+        request.resource.data.userId == request.auth.uid;
+    }
+
+    // Pets collection (for bot access)
+    match /pets/{petId} {
+      allow read: if true; // Allow bot to read pets
+      allow write: if isAuthenticated();
+    }
+
+    // Providers (NEW COLLECTION)
+    match /providers/{providerId} {
+      allow read: if isAuthenticated(); // Anyone logged in can read providers
+      allow create, update: if isAuthenticated() && providerId == request.auth.uid; // Providers can update their own data
+      allow delete: if false; // No one can delete (except admins via server)
+    }
+
+    // Provider Verifications - Updated with admin access
+    match /provider_verifications/{verificationId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && verificationId == request.auth.uid; // Providers can create their own verification
+      allow update: if isAuthenticated() && 
+        (verificationId == request.auth.uid || // Providers can update their own verification
+         isAdmin()); // Admins can update any verification
+      allow delete: if isAdmin(); // Only admins can delete
+    }
+
+    // Chat Rooms
+    match /chat_rooms/{chatRoomId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && 
+        (resource == null || 
+         resource.data.userId == request.auth.uid || 
+         resource.data.providerId == request.auth.uid);
+      
+      // Messages subcollection
+      match /messages/{messageId} {
+        allow read, write: if isAuthenticated() && 
+          (get(/databases/$(database)/documents/chat_rooms/$(chatRoomId)).data.userId == request.auth.uid || 
+           get(/databases/$(database)/documents/chat_rooms/$(chatRoomId)).data.providerId == request.auth.uid);
+      }
+    }
+  }
+}
