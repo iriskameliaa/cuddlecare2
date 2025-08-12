@@ -1,0 +1,43 @@
+@startuml CuddleCare Simple System Overview
+title CuddleCare Pet Care Platform - Simple System Flow
+
+start
+
+:User Opens App;
+:Register/Login;
+:Choose Role (Pet Owner/Provider);
+
+if (Pet Owner?) then (yes)
+  :Add Pet Information;
+  :Search for Providers;
+  :View Provider Map;
+  :Select Provider;
+  :Create Booking;
+  :Chat with Provider;
+  :Receive Service;
+  :Leave Review;
+else (no)
+  :Complete Provider Setup;
+  :Add Services Offered;
+  :Get Verified;
+  :Receive Booking Requests;
+  :Accept/Decline Bookings;
+  :Provide Service;
+  :Get Reviewed;
+endif
+
+:Telegram Bot Notifications;
+:Real-time Updates;
+
+stop
+
+note right
+  **Key Features:**
+  • Location-based matching
+  • Real-time chat
+  • Telegram bot integration
+  • Cloud-based storage
+  • Automated reminders
+end note
+
+@enduml

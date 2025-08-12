@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "959094650804",
+    "project_id": "cuddlecare2-dd913",
+    "storage_bucket": "cuddlecare2-dd913.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:959094650804:android:598989e0677afe564de4e1",
+        "android_client_info": {
+          "package_name": "com.example.cuddlecare2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "YOUR_API_KEY" //Replace with your API key
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
