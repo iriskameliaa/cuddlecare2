@@ -540,7 +540,7 @@ async function getUserBookings(userId: string) {
 
 async function sendTelegramMessage(chatId: string, message: string) {
   try {
-    const botToken = process.env.TELEGRAM_BOT_TOKEN || "7583657491:AAGfNFb60aDPkquorxgZ4Lg8t5uN1-JGSDo";
+    const botToken = process.env.TELEGRAM_BOT_TOKEN || "YOUR_BOT_TOKEN";
     const baseUrl = `https://api.telegram.org/bot${botToken}`;
 
     const response = await fetch(`${baseUrl}/sendMessage`, {

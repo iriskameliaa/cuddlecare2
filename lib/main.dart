@@ -11,6 +11,7 @@ import 'package:cuddlecare2/screens/login_screen.dart';
 import 'package:cuddlecare2/services/bot_config_service.dart';
 import 'package:cuddlecare2/services/telegram_polling_service.dart';
 import 'dart:async'; // Added for Timer
+import 'dart:io'; // Added for Platform
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,11 +61,15 @@ Future<void> _setupAdminUserIfNeeded() async {
     final FirebaseAuth auth = FirebaseAuth.instance;
     final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
+    // Retrieve admin password from environment variable
+    final adminPassword =
+        Platform.environment['ADMIN_PASSWORD'] ?? 'YOUR_ADMIN_PASSWORD';
+
     // Check if admin user already exists
     try {
       final adminCredential = await auth.signInWithEmailAndPassword(
         email: 'admin@cuddlecare.com',
-        password: 'admin123456',
+        password: adminPassword,
       );
 
       print('Admin user already exists! UID: ${adminCredential.user!.uid}');
@@ -93,7 +98,7 @@ Future<void> _setupAdminUserIfNeeded() async {
         final UserCredential userCredential =
             await auth.createUserWithEmailAndPassword(
           email: 'admin@cuddlecare.com',
-          password: 'admin123456',
+          password: adminPassword,
         );
 
         final User? user = userCredential.user;
@@ -111,7 +116,7 @@ Future<void> _setupAdminUserIfNeeded() async {
           print('Admin user created successfully!');
           print('UID: ${user.uid}');
           print('Email: admin@cuddlecare.com');
-          print('Password: admin123456');
+          print('Password: $adminPassword');
 
           // Sign out after creation
           await auth.signOut();

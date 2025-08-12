@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 
 class TelegramNotificationService {
   static const String _baseUrl =
@@ -149,7 +150,8 @@ class TelegramNotificationService {
 
   /// Set up webhook URL with Telegram (call this once during setup)
   static Future<void> setupWebhook() async {
-    const String botToken = '7583657491:AAGfNFb60aDPkquorxgZ4Lg8t5uN1-JGSDo';
+    const String botToken =
+        Platform.environment['TELEGRAM_BOT_TOKEN'] ?? 'YOUR_BOT_TOKEN';
     const String webhookUrl = '$_baseUrl/telegramWebhookSimple';
 
     try {

@@ -1,19 +1,46 @@
-# cuddlecare2
+# CuddleCare2
 
-A new Flutter project.
+CuddleCare2 is a Flutter-based application designed to streamline pet care services, including bookings, reminders, and communication with pet sitters.
+
+## Features
+
+- **User-Friendly Interface**: Easy navigation for users and pet sitters.
+- **Booking Management**: View, create, and manage pet care bookings.
+- **Smart Reminders**: Automated reminders for upcoming bookings.
+- **Telegram Bot Integration**: Seamless communication via Telegram.
+- **Admin Dashboard**: Tools for managing services, users, and bookings.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+- Flutter SDK: [Install Flutter](https://docs.flutter.dev/get-started/install)
+- Dart: Included with Flutter installation.
+- Firebase Account: Required for backend services.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/your-username/cuddlecare2.git
+   cd cuddlecare2
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   flutter pub get
+   ```
+
+3. Configure Firebase:
+   - Add your `google-services.json` (Android) and `GoogleService-Info.plist` (iOS) files to the respective directories.
+
+4. Run the app:
+
+   ```bash
+   flutter run
+   ```
 
 ## API Key Configuration
 
@@ -38,6 +65,39 @@ This project requires API keys to function correctly. To ensure security, the ac
 ### Important Notes
 
 - Do not hardcode sensitive keys directly in the code.
-- Ensure that files containing actual keys (e.g., `.env`) are added to `.gitignore` to prevent them from being pushed to version control.
+- Ensure `.env` and other sensitive files are added to `.gitignore`.
 
-For more details, refer to the [Flutter documentation](https://docs.flutter.dev/).
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch:
+
+   ```bash
+   git checkout -b feature-name
+   ```
+
+3. Commit your changes:
+
+   ```bash
+   git commit -m "Add feature-name"
+   ```
+
+4. Push to your branch:
+
+   ```bash
+   git push origin feature-name
+   ```
+
+5. Open a pull request.
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+## Acknowledgments
+
+- [Flutter](https://flutter.dev/)
+- [Firebase](https://firebase.google.com/)
+- [Telegram Bot API](https://core.telegram.org/bots/api)

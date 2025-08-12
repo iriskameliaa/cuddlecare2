@@ -17,7 +17,9 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   bool _isLoading = false;
   String? _errorMessage;
 
-  // Admin credentials: admin@cuddlecare.com / admin123456
+  // Admin credentials are now stored securely in environment variables.
+  // Email: admin@cuddlecare.com
+  // Password: Use the environment variable `ADMIN_PASSWORD`.
 
   @override
   void initState() {
